@@ -25,31 +25,65 @@
 
 
 ---
+
 ### **1. Purpose**
 
 > **"Difficult medical terms are no longer a barrier."**
 
-**Medly** is an innovative on-device AI solution that leverages the **NPU performance of the Snapdragon X Elite** to analyze speech in real time and instantly convert complex medical jargon into easy-to-understand everyday language for patients.  
-In this project, we developed a service that summarizes specialized medical terminology mentioned during consultations by medical professionals and adjusts the content to match each patient’s comprehension level. It also tags key terms and provides easy-to-understand explanations.
+#### 🏥 <mark><strong>Medly</strong></mark>
 
-The system is built for **Qualcomm’s Snapdragon X Elite** series and utilizes a **fine-tuned NER model** along with the **Qwen2.5-7B** model.  
-Designed as an **edge-device application**, it operates smoothly in offline environments.  
-For the best user experience, we recommend using **Microsoft Live Caption**.
+**Medly** is an innovative **on-device AI** solution that leverages the  
+<mark>**NPU performance of the Snapdragon X Elite**</mark>  
+to analyze speech in real time and instantly convert complex medical jargon into easy-to-understand everyday language for patients.  
 
-### ⚙️ NPU Leverage
+In this project, we developed a service that:
 
-- **Ultra-low Latency Performance**  
-  By leveraging **8-bit quantized models** from **Qualcomm AI Hub**, the system achieves significantly faster and more efficient speech recognition and medical term tagging compared to traditional CPU or GPU inference.  
-  This allows patients and healthcare providers to receive real-time explanations with virtually no latency.  
-  > _Parallelization of the **Live Caption** feature, OCR pipeline, and LLM backend logic will be added in a future update._
+- Summarizes **specialized medical terminology** mentioned during consultations by medical professionals  
+- Adjusts the content to match each patient’s **individual comprehension level**  
+- Tags **key medical terms** and provides **easy-to-understand explanations**
 
-- **High Energy Efficiency**  
-  Its low-power design allows the AI to run continuously for approximately **10–12 hours** on a standard Microsoft laptop without significant battery drain.
+<br>
 
-- **Enhanced Security & Data Privacy**  
-  All processes—including patient responses, consultation data, AI computations, and generated outputs—are handled entirely on the edge device, ensuring **complete data isolation** and preventing any risk of external data leakage.
+The system is built for  
+<mark>**Qualcomm’s Snapdragon X Elite**</mark>  
+and utilizes a <mark>**fine-tuned NER model**</mark> along with the  
+<mark>**Qwen2.5-7B**</mark> model.  
+
+Designed as an <mark>**edge-device application**</mark>, it operates smoothly in **offline environments**.  
+For the best user experience, we recommend using <mark>**Microsoft Live Caption**</mark>.
 
 ---
+
+### ⚙️ <mark><strong>NPU Leverage</strong></mark>
+
+- **Ultra-low Latency Performance**  
+  By leveraging <mark>**8-bit quantized models**</mark> from <mark>**Qualcomm AI Hub**</mark>,  
+  the system achieves significantly faster and more efficient **speech recognition** and **medical term tagging**  
+  compared to traditional CPU or GPU inference.  
+
+  This allows patients and healthcare providers to receive **real-time explanations**  
+  with virtually **no latency**.  
+
+  > _Parallelization of the **Live Caption** feature, OCR pipeline, and LLM backend logic  
+  > will be added in a future update._
+
+<br>
+
+- **High Energy Efficiency**  
+  Its low-power design allows the AI to run continuously for approximately  
+  <mark>**10–12 hours**</mark> on a standard Microsoft laptop  
+  without significant battery drain.
+
+<br>
+
+- **Enhanced Security & Data Privacy**  
+  All processes—including patient responses, consultation data, AI computations,  
+  and generated outputs—are handled **entirely on the edge device**,  
+  ensuring <mark>**complete data isolation**</mark>  
+  and preventing any risk of external data leakage.
+
+---
+
 ## 💡Key Features
 | Feature | Description |
 |   ---   | --- |
