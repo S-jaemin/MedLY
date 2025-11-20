@@ -26,7 +26,7 @@
 
 ---
 
-### **🔹Purpose**
+### **🔹 Purpose**
 
 > **"Difficult medical terms are no longer a barrier."**
 
