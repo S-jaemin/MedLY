@@ -2,7 +2,7 @@
 
 # 🏥 Medly: A Patient-Friendly Medical Phraseology App
 
-**An on-device AI app that provides real-time explanations of medical terms to improve communication between patients and doctors.**
+**On-device AI app that provides real-time explanations of medical terms to improve communication between patients and doctors.**
 
 <p>
   <img src="https://img.shields.io/badge/Python-3.12+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python Version">
@@ -30,7 +30,7 @@
 
 > **"Difficult medical terms are no longer a barrier."**
 
-<mark>**Medly**<mark> is an innovative **on-device AI** solution that leverages the <mark>**NPU performance of the Snapdragon X Elite**</mark> to analyze speech in real time and instantly convert complex medical jargon into easy-to-understand everyday language for patients.  
+<mark>**Medly**</mark> is an innovative **on-device AI** solution that leverages the <mark>**NPU performance of the Snapdragon X Elite**</mark> to analyze speech in real time and instantly convert complex medical jargon into easy-to-understand everyday language for patients.  
 
 In this project, we developed a service that:
 - Summarizes **specialized medical terminology** mentioned during consultations by medical professionals  
@@ -58,7 +58,7 @@ The system is built for  **Qualcomm’s Snapdragon X Elite** and utilizes a **fi
 <br>
 
 - **Enhanced Security & Data Privacy**  
-  All processes—including patient responses, consultation data, AI computations, and generated outputs—are handled **entirely on the edge device**, <strong>**ensuring complete data isolation**<strong> and preventing any risk of external data leakage.
+  All processes—including patient responses, consultation data, AI computations, and generated outputs—are handled **entirely on the edge device**, <strong>**ensuring complete data isolation**</strong> and preventing any risk of external data leakage.
 
 ---
 
