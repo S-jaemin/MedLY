@@ -118,6 +118,7 @@ PROJECT_ROOT/
    ├─ backend_deploy/
    │  └─ model/  ⬅️⬅️⬅️ Here!
    └─ ...
+```
 
 - 2. zip-off the file
  
