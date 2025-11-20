@@ -30,52 +30,35 @@
 
 > **"Difficult medical terms are no longer a barrier."**
 
-<mark>**Medly**<mark> is an innovative **on-device AI** solution that leverages the  
-<mark>**NPU performance of the Snapdragon X Elite**</mark>  
-to analyze speech in real time and instantly convert complex medical jargon into easy-to-understand everyday language for patients.  
+<mark>**Medly**<mark> is an innovative **on-device AI** solution that leverages the <mark>**NPU performance of the Snapdragon X Elite**</mark> to analyze speech in real time and instantly convert complex medical jargon into easy-to-understand everyday language for patients.  
 
 In this project, we developed a service that:
-
 - Summarizes **specialized medical terminology** mentioned during consultations by medical professionals  
 - Adjusts the content to match each patient’s **individual comprehension level**  
 - Tags **key medical terms** and provides **easy-to-understand explanations**
+<br>
+
+The system is built for  **Qualcomm’s Snapdragon X Elite** and utilizes a **fine-tuned NER model** along with the **Qwen2.5-7B** model. Designed as an **edge-device application**, it operates smoothly in **offline environments**. For the best user experience, we recommend using <mark>**Microsoft Live Caption**</mark>.
 
 <br>
 
-The system is built for  **Qualcomm’s Snapdragon X Elite** and utilizes a **fine-tuned NER model** along with the **Qwen2.5-7B** model.  
-
-Designed as an **edge-device application**, it operates smoothly in **offline environments**.  
-For the best user experience, we recommend using <mark>**Microsoft Live Caption**</mark>.
-
----
-
 ### ⚙️ <strong>NPU Leverage</strong>
 
-- **Ultra-low Latency Performance**  
-  By leveraging **8-bit quantized models** from **Qualcomm AI Hub**,  
-  the system achieves significantly faster and more efficient **speech recognition** and **medical term tagging**  
-  compared to traditional CPU or GPU inference.  
+- **Ultra-low Latency Performance**
+- 
+  By leveraging **8-bit quantized models** from **Qualcomm AI Hub**, the system achieves significantly faster and more efficient **speech recognition** and **medical term tagging** compared to traditional CPU or GPU inference. This allows patients and healthcare providers to receive **real-time explanations** with virtually **no latency**.  
 
-  This allows patients and healthcare providers to receive **real-time explanations**  
-  with virtually **no latency**.  
-
-  > _Parallelization of the **Live Caption** feature, OCR pipeline, and LLM backend logic  
-  > will be added in a future update._
+  > _Parallelization of the **Live Caption** feature, OCR pipeline, and LLM backend logic will be added in a future update._
 
 <br>
 
 - **High Energy Efficiency**  
-  Its low-power design allows the AI to run continuously for approximately  
-  **10–12 hours** on a standard Microsoft laptop  
-  without significant battery drain.
+  Its low-power design allows the AI to run continuously for approximately **10–12 hours** on a standard Microsoft laptop without significant battery drain.
 
 <br>
 
 - **Enhanced Security & Data Privacy**  
-  All processes—including patient responses, consultation data, AI computations,  
-  and generated outputs—are handled **entirely on the edge device**,  
-  <strong>**ensuring complete data isolation**<strong>
-  and preventing any risk of external data leakage.
+  All processes—including patient responses, consultation data, AI computations, and generated outputs—are handled **entirely on the edge device**, <strong>**ensuring complete data isolation**<strong> and preventing any risk of external data leakage.
 
 ---
 
