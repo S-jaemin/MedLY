@@ -1,0 +1,44 @@
+# --- FastAPI 서버 ---
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+
+# --- 유틸리티 ---
+gdown==4.7.3
+reportlab==4.2.0
+
+# --- OCR 및 이미지 처리 ---
+pyautogui==0.9.54
+pytesseract==0.3.10
+Pillow==10.3.0
+opencv-python-headless==4.9.0.80
+numpy==1.26.4
+
+# --- AI & ML ---
+onnxruntime-qnn==1.22.0
+transformers==4.41.2
+pywin32==311
+huggingface-hub==0.34.4
+tokenizers==0.19.1
+safetensors==0.6.2
+sentencepiece==0.2.1
+regex==2025.7.34
+PyYAML==6.0.2
+filelock==3.19.1
+packaging==25.0
+tqdm==4.67.1
+flatbuffers==25.2.10
+protobuf==6.32.0
+
+# --- Low-level Utilities (Dependencies) ---
+pydantic==2.5.3
+pydantic_core==2.14.6
+annotated-types==0.7.0
+typing-inspection==0.4.1
+typing_extensions==4.14.1
+requests==2.32.5
+certifi==2025.8.3
+charset-normalizer==3.4.3
+idna==3.10
+urllib3==2.5.0
+attrs==25.3.0
+six==1.17.0

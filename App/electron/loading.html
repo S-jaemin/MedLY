@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: sans-serif;
+            color: #333;
+            user-select: none;
+        }
+        .loader {
+            border: 6px solid #e3e3e3;
+            border-top: 6px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        h2 { margin-bottom: 10px; }
+        p { color: #666; }
+    </style>
+</head>
+<body>
+    <div class="loader"></div>
+    <h2>Medly AI 시작 중...</h2>
+    <p id="status">서버 준비 중...</p>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const SERVER_URL = "http://127.0.0.1:8000"; 
+            const statusText = document.getElementById('status');
+            let seconds = 0;
+
+            // 1. 타이머 (1초마다 숫자 증가)
+            const timerInterval = setInterval(() => {
+                seconds++;
+                if (statusText) {
+                    statusText.innerText = `서버 준비 중... (${seconds}초)`;
+                    
+                    if (seconds > 20) {
+                        statusText.style.color = "#d35400";
+                        statusText.innerText = `모델 로딩 중... (${seconds}초) - 조금만 더 기다려주세요`;
+                    }
+                    if (seconds > 60) {
+                        statusText.style.color = "red";
+                        statusText.innerText = `오류: 백엔드 실행 실패 가능성 있음 (${seconds}초)`;
+                    }
+                }
+            }, 1000);
+
+            // 2. 서버 연결 확인 (Ping)
+            const checkServer = () => {
+                fetch(SERVER_URL)
+                    .then(response => {
+                        // [핵심 수정] 상태 코드가 200일 때만 성공으로 간주
+                        if (response.status === 200) {
+                            clearInterval(timerInterval);
+                            if (statusText) {
+                                statusText.innerText = "연결 성공! 메인 화면으로 이동합니다.";
+                                statusText.style.color = "green";
+                            }
+                            setTimeout(() => {
+                                window.electronAPI.loadMainUI();
+                            }, 500);
+                        } else {
+                            // 503이나 다른 에러 코드가 오면 그냥 무시하고 다음 핑 시도
+                            if (response.status === 503) {
+                                console.log("Backend is online but models are not ready (503). Retrying...");
+                            }
+                            throw new Error("Not ready or 503");
+                        }
+                    })
+                    .catch(() => {
+                        // 연결 자체에 실패하거나 (ERR_CONNECTION_REFUSED) 위에서 throw 된 에러
+                        setTimeout(checkServer, 1000);
+                    });
+            };
+
+            // 체크 시작
+            checkServer();
+        });
+    </script>
+</body>
+</html>

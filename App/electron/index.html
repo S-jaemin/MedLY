@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Medly - Real-time Medical Conversation Assistant</title>
+<!-- Preload updated to match static folder & filename with hyphen -->
+<link as="image" href="static/tiger-nurse.png" rel="preload"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    /* ===== Light Sky Theme ===== */
+    :root {
+        --bg-dark: #c5e7ff;    /* 페이지 바탕: 하늘색 */
+        --bg-med: #EAF5FF;     /* 앱 컨테이너 */
+        --bg-light: #FFFFFF;   /* 패널 배경 */
+        --text-primary: #0F1F3A;   /* 진한 남색 텍스트 */
+        --text-secondary: #3C4A5F; /* 보조 텍스트 */
+        --accent-yellow: #FFC947;
+        --accent-red: #E94560;
+
+        --btn-main: #003366;   /* 버튼 기본: 진한 파랑 */
+        --btn-hover: #0055AA;  /* 버튼 hover: 밝은 파랑 */
+    }
+    * {
+        box-sizing: border-box;
+        scrollbar-width: thin;
+        scrollbar-color: var(--btn-hover) var(--bg-med);
+    }
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--bg-dark);
+        color: var(--text-primary);
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        font-size: 19.20px;
+    }
+    .app-container {
+        width: 95%;
+        max-width: 1680.00px;
+        min-height: 90vh;
+        background-color: var(--bg-med);
+        border-radius: 24.00px;
+        box-shadow: 0 12.00px 48.00px rgba(0,0,0,0.15);
+        display: flex;
+        flex-direction: column;
+        padding: 15.00px;
+        position: relative;
+    }
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0px;
+        margin-top: 0px;
+        flex-shrink: 0;
+    }
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 12.00px;
+        font-size: 2.16rem;
+        font-weight: 700;
+        color: var(--btn-main);
+    }
+    .logo .dot {
+        color: var(--accent-yellow);
+    }
+    .logo-img {
+        width: 80.00px;
+        height: 80.00px;
+        object-fit: contain;
+        display: block;
+        filter: drop-shadow(0 1.20px 1.20px rgba(0,0,0,.08));
+        border-radius: 9.60px;
+    }
+
+    /* ===== Header actions: Info + Start 버튼 그룹 ===== */
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* Info 아이콘 버튼 */
+    .icon-btn {
+        background-color: #ffffff;
+        border: 1.2px solid #dbeafe;
+        border-radius: 999px;
+        padding: 8.4px 14.4px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        font-size: 0.96rem;
+        font-weight: 600;
+        color: var(--btn-main);
+        box-shadow: 0 4.8px 10.8px rgba(0,0,0,0.06);
+        transition: background-color .2s ease, box-shadow .2s ease, transform .15s ease;
+    }
+    .icon-btn i {
+        font-size: 1.02rem;
+    }
+    .icon-btn:hover {
+        background-color: #eff6ff;
+        transform: translateY(-1.2px);
+        box-shadow: 0 7.2px 16.8px rgba(0,0,0,0.12);
+    }
+    .icon-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 3.6px 8.4px rgba(0,0,0,0.08);
+    }
+
+    .main-content {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        grid-template-rows: auto 1fr;
+        gap: 30.00px;
+        flex-grow: 1;
+        overflow: hidden;
+    }
+    .pane {
+        background-color: var(--bg-light);
+        border-radius: 18.00px;
+        padding: 24.00px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        border: 1.20px solid #dbeafe;
+    }
+    .pane-title {
+        font-size: 1.32rem;
+        font-weight: 600;
+        margin-bottom: 14.40px;
+        border-bottom: 1.20px solid #e5e7eb;
+        padding-bottom: 9.60px;
+        flex-shrink: 0;
+        color: var(--text-primary);
+    }
+    #conversation-pane {
+        grid-column: 1 / 2;
+        grid-row: 1 / 2;
+        display: grid;
+        grid-template-rows: auto 1fr auto auto;
+    }
+    #live-transcript {
+        overflow-y: auto;
+        line-height: 1.7;
+        min-height: 40px;
+        padding-right: 12.00px;
+        font-size: 1.25rem;
+    }
+    #tagged-terms-list {
+        overflow-y: auto;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        min-height: 40px;
+        max-height: 120px;
+    }
+    #definition-pane {
+        grid-column: 2 / 3;
+        grid-row: 1 / 2;
+    }
+    #summary-pane {
+        grid-column: 1 / 3;
+        grid-row: 2 / 3;
+    }
+    #summary-output {
+        flex-grow: 1;
+        overflow-y: auto;
+        font-size: 1.20rem;
+        line-height: 1.7;
+    }
+    .term-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14.40px;
+        border-radius: 9.60px;
+        cursor: pointer;
+        transition: background-color 0.2s ease, transform 0.15s ease;
+        margin-bottom: 9.60px;
+    }
+    .term-item:hover, .term-item.active {
+        background-color: rgba(0, 85, 170, 0.10);
+        transform: translateX(1.20px);
+    }
+    #definition-card {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    #definition-term {
+        background-color: var(--btn-hover);
+        color: #fff;
+        padding: 9.60px 24.00px;
+        border-radius: 24.00px;
+        font-weight: 600;
+        display: inline-block;
+        margin-bottom: 19.20px;
+        font-size: 1.26rem;
+    }
+    #definition-output {
+        font-size: 1.20rem;
+        line-height: 1.6;
+        color: var(--text-secondary);
+        white-space: pre-wrap;
+        flex-grow: 1;
+        overflow-y: auto;
+        text-align: left;
+        padding: 6.00px;
+    }
+    #definition-output:empty::before {
+        content: 'A brief explanation will be displayed here when you click a tagged term';
+        color: var(--text-secondary);
+        font-style: italic;
+    }
+    .level-selector {
+        display: flex;
+        justify-content: space-around;
+        background-color: #f0f9ff;
+        border-radius: 12.00px;
+        padding: 6.00px;
+        margin: 14.40px 0 19.20px;
+        border: 1.20px solid #dbeafe;
+    }
+    .level-btn {
+        background: none;
+        border: none;
+        color: var(--text-secondary);
+        padding: 9.60px 19.20px;
+        border-radius: 9.60px;
+        cursor: pointer;
+        font-weight: 600;
+        flex-grow: 1;
+        transition: all 0.2s ease;
+    }
+    .level-btn:hover {
+        background-color: rgba(0, 85, 170, 0.12);
+        color: var(--text-primary);
+    }
+    .level-btn.active {
+        background-color: var(--btn-main);
+        color: #fff;
+        transform: translateY(-1.20px);
+    }
+    #summary-output pre {
+        white-space: pre-wrap;
+        margin: 0;
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* ===== Buttons ===== */
+    #control-btn {
+        background-color: var(--btn-main);
+        color: #fff;
+        border: none;
+        padding: 14.40px 28.80px;
+        border-radius: 12.00px;
+        cursor: pointer;
+        font-size: 1.20rem;
+        font-weight: 600;
+        letter-spacing: 0.24px;
+        transition: background-color .2s ease, transform .15s ease, box-shadow .2s ease;
+        min-width: 192.00px;
+        box-shadow: 0 7.20px 16.80px rgba(0,0,0,.12);
+    }
+    #control-btn:hover {
+        background-color: var(--btn-hover);
+        transform: translateY(-2.40px);
+        box-shadow: 0 12.00px 21.60px rgba(0,0,0,.16);
+    }
+    #control-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 4.80px 12.00px rgba(0,0,0,.14);
+    }
+    #control-btn.recording {
+        background-color: var(--accent-red);
+    }
+
+    /* ===== Info Modal ===== */
+    .info-modal {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9998;
+        font-size: 16px;
+    }
+    .info-modal.open {
+        display: flex;
+    }
+    .info-modal-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(15, 24, 40, 0.45);
+        backdrop-filter: blur(4.8px);
+    }
+    .info-modal-content {
+        position: relative;
+        z-index: 1;
+        max-width: 560px;
+        width: calc(100% - 48px);
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 24px 24px 21.6px;
+        box-shadow: 0 18px 40px rgba(15,23,42,0.24);
+        border: 1.2px solid #dbeafe;
+        color: var(--text-primary);
+    }
+    .info-modal-content h2 {
+        margin: 0 0 16.8px;
+        font-size: 1.32rem;
+        font-weight: 700;
+        color: var(--btn-main);
+    }
+    .info-modal-steps {
+        margin: 0 0 16.8px 20px;
+        padding: 0;
+        line-height: 1.7;
+        color: var(--text-secondary);
+    }
+    .info-modal-steps li {
+        margin-bottom: 8.4px;
+    }
+    .info-modal-note-title {
+        margin: 0 0 4.8px;
+        font-weight: 700;
+        color: var(--accent-red);
+    }
+    .info-modal-note {
+        margin: 0;
+        font-size: 0.98rem;
+        line-height: 1.6;
+        color: var(--text-secondary);
+    }
+    .info-modal-close {
+        position: absolute;
+        top: 10.8px;
+        right: 12px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        font-size: 1.08rem;
+        color: var(--text-secondary);
+        padding: 4.8px;
+        border-radius: 999px;
+        transition: background-color .15s ease, transform .1s ease;
+    }
+    .info-modal-close:hover {
+        background-color: #eff6ff;
+        transform: scale(1.05);
+    }
+    .info-modal-close:active {
+        transform: scale(0.97);
+    }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div class="app-container">
+    <header class="header">
+        <div class="logo">
+            <img src="static/tiger-nurse.png?v=1" alt="Medly 호랑이 간호사 로고" class="logo-img" width="120" height="120" decoding="auto">
+            <span>MedLY</span><span class="dot">.</span>
+        </div>
+        <div class="header-actions">
+            <button id="info-btn" type="button" class="icon-btn" aria-label="Usage information">
+                <i class="fas fa-circle-info"></i>
+                <span class="icon-btn-label">Info</span>
+            </button>
+            <button id="control-btn"><i class="fas fa-play"></i> Start</button>
+        </div>
+    </header>
+    <main class="main-content">
+        <div class="pane" id="conversation-pane">
+            <div class="pane-title">Diagnosis</div>
+            <div id="live-transcript">Press the 'Start' button to begin...</div>
+            <div class="pane-title" style="margin-top: 18.00px;">Key Terms</div>
+            <ul id="tagged-terms-list"></ul>
+        </div>
+        <div class="pane" id="definition-pane">
+            <div class="pane-title">Definition</div>
+            <div id="definition-card">
+                <div id="definition-term">Select a key term</div>
+                <div class="level-selector">
+                    <button class="level-btn active" data-level="Child" style=" font-size: 1.2rem;">Child</button>
+                    <button class="level-btn" data-level="Student" style=" font-size: 1.2rem;">Student</button>
+                    <button class="level-btn" data-level="Adult" style=" font-size: 1.2rem;">Adult</button>
+                </div>
+                <div id="definition-output"></div>
+            </div>
+        </div>
+        <div class="pane" id="summary-pane">
+            <div class="pane-title">Summary</div>
+            <div id="summary-output"></div>
+        </div>
+    </main>
+</div>
+
+<!-- ===== Info Modal ===== -->
+<div id="info-modal" class="info-modal" aria-hidden="true" role="dialog" aria-labelledby="info-modal-title">
+    <div class="info-modal-backdrop" id="info-backdrop"></div>
+    <div class="info-modal-content">
+        <button type="button" class="info-modal-close" id="info-close-btn" aria-label="Close info">
+            <i class="fas fa-times"></i>
+        </button>
+        <h2 id="info-modal-title">How to use MedLY with Live Caption</h2>
+        <ol class="info-modal-steps">
+            <li>Turn on Live Caption (Ctrl + Windows + L).</li>
+            <li>Click the <strong>New session (Start)</strong> button and begin the conversation.</li>
+            <li>When the conversation is finished, click the <strong>Stop</strong> button to end the recording.</li>
+        </ol>
+        <p class="info-modal-note-title">Note</p>
+        <p class="info-modal-note">
+            If Live Caption appears in two lines, the text may not be recognized properly!<br/>
+            Please adjust the size of the Live Caption window so that the transcription appears in a single line.
+        </p>
+    </div>
+</div>
+<!-- ===== End Info Modal ===== -->
+
+<script>
+    const controlBtn = document.getElementById('control-btn');
+    const liveTranscript = document.getElementById('live-transcript');
+    const taggedTermsList = document.getElementById('tagged-terms-list');
+    const definitionTerm = document.getElementById('definition-term');
+    const definitionOutput = document.getElementById('definition-output');
+    const summaryOutput = document.getElementById('summary-output');
+    const levelSelector = document.querySelector('.level-selector');
+    
+    let ws;
+    let isRecording = false;
+    let sessionFinished = false; 
+    let currentLevel = 'Child';
+    let currentTerm = null;
+
+    // ✅ Summary 로딩 애니메이션 상태
+    let summaryLoadingTimer = null;
+    let summaryLoadingStep = 0;
+
+    function startSummaryLoading() {
+        stopSummaryLoading(); // 혹시 이전 타이머 있으면 정리
+
+        const baseText = "Generating summary";
+        summaryLoadingStep = 0;
+        summaryOutput.textContent = baseText + ".";
+
+        summaryLoadingTimer = setInterval(() => {
+            summaryLoadingStep = (summaryLoadingStep + 1) % 3; // 0,1,2
+            const dots = ".".repeat(summaryLoadingStep + 1);   // 1~3개 점
+            summaryOutput.textContent = `${baseText}${dots}`;
+        }, 500);
+    }
+
+    function stopSummaryLoading() {
+        if (summaryLoadingTimer) {
+            clearInterval(summaryLoadingTimer);
+            summaryLoadingTimer = null;
+        }
+    }
+
+    /** UI와 모든 상태 변수를 완전히 초기화하는 함수 */
+    function resetUI() {
+        liveTranscript.textContent = "Press the 'Start' button to begin...";
+        taggedTermsList.innerHTML = "";
+        summaryOutput.innerHTML = "";
+        definitionTerm.textContent = 'Select a key term';
+        definitionOutput.textContent = '';
+        stopSummaryLoading();   // 🔹 로딩도 같이 초기화
+        document.querySelectorAll('.level-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelector('.level-btn[data-level="Child"]').classList.add('active');
+        currentLevel = 'Child';
+        currentTerm = null;
+        
+        isRecording = false;
+        sessionFinished = false;
+    }
+
+    /** 새로운 세션을 시작하는 함수 */
+    function startSession() {
+        if (sessionFinished) {
+            resetUI();
+        }
+
+        controlBtn.disabled = true;
+        controlBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Starting...';
+
+        if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
+            ws.onclose = null; 
+            ws.close();
+        }
+
+        const BACKEND_URL = "127.0.0.1:8000";
+
+        ws = new WebSocket(`ws://${BACKEND_URL}/ws/ocr_pipeline`);  
+
+        ws.onopen = () => {
+            console.log("WebSocket connected. Starting session.");
+            controlBtn.disabled = false;
+            ws.send(JSON.stringify({ command: "start" }));
+            isRecording = true;
+            sessionFinished = false;
+            controlBtn.innerHTML = '<i class="fas fa-stop"></i> Stop';
+            controlBtn.classList.add('recording');
+        };
+
+        ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        if (data.type === "live_text" || data.type === "final_update") {
+            liveTranscript.textContent = data.sentence;
+            updateTaggedTermsList(data.unique_terms || []);
+
+        } else if (data.type === "summary_result") {
+            // 요약 생성 완료 → 로딩 애니메이션 정지
+            stopSummaryLoading();
+
+            const raw = data.output || "";
+            const cleanOutput = raw
+                .toString()
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+
+            if (cleanOutput.trim()) {
+                summaryOutput.innerHTML = `<pre>${cleanOutput}</pre>`;
+            } else {
+                summaryOutput.textContent = "No summary was generated.";
+            }
+
+        } else if (data.type === "term_definition") {
+            definitionOutput.textContent = data.definition;
+
+        } else if (data.type === "processing_llm") {
+            // 🔹 이 분기는 이제 굳이 없어도 되지만,
+            //   백엔드에서 여전히 보내고 있다면 보너스로 동작하게 둬도 됨.
+            startSummaryLoading();
+        }
+    };
+
+        ws.onerror = (error) => {
+            console.error("WebSocket Error:", error);
+            alert("Cannot connect to the server. Please check your connection and try again.");
+            controlBtn.disabled = false;
+            controlBtn.innerHTML = '<i class="fas fa-play"></i> Start';
+            controlBtn.classList.remove('recording');
+            stopSummaryLoading();   // 에러 시 로딩 정지
+        };
+
+        ws.onclose = () => {
+            console.log("WebSocket connection closed.");
+            isRecording = false;
+            if (!sessionFinished) {
+                controlBtn.disabled = false;
+                controlBtn.innerHTML = '<i class="fas fa-play"></i> Start';
+                controlBtn.classList.remove('recording');
+            }
+            // 연결이 닫히면 로딩이 돌아가고 있더라도 정지
+            stopSummaryLoading();
+        };
+    }
+
+    /** 진행 중인 세션을 '중지'하는 함수. 연결은 유지 */
+    function stopSession() {
+        if (ws?.readyState === WebSocket.OPEN) {
+            // 🔹여기서 바로 로딩 애니메이션 시작
+            startSummaryLoading();
+
+            ws.send(JSON.stringify({ command: "stop_session" }));
+            console.log("Session stopped. Ready for term definitions.");
+        }
+        isRecording = false;
+        sessionFinished = true; // 세션이 끝났고, 결과 확인 모드임을 표시
+        controlBtn.innerHTML = '<i class="fas fa-redo"></i> New Session';
+        controlBtn.classList.remove('recording');
+    }
+
+    controlBtn.onclick = () => {
+        if (isRecording) {
+            stopSession();
+        } else {
+            startSession();
+        }
+    };
+
+    function updateTaggedTermsList(terms) {
+        taggedTermsList.innerHTML = '';
+        (terms || []).forEach(term => {
+            const li = document.createElement('li');
+            li.className = 'term-item';
+            li.textContent = term;
+            li.dataset.term = term;
+            if (term === currentTerm) li.classList.add('active');
+            taggedTermsList.appendChild(li);
+        });
+    }
+    
+    function requestDefinition(term, level) {
+        if (ws?.readyState === WebSocket.OPEN) {
+            definitionTerm.textContent = term;
+            definitionOutput.textContent = "Generating definition...";
+            ws.send(JSON.stringify({ command: "define_term", term, level }));
+        } else {
+            alert("Connection to the server is closed. Please start a new session.");
+        }
+    }
+    
+    taggedTermsList.onclick = (e) => {
+        if (e.target && e.target.classList.contains('term-item')) {
+            const term = e.target.dataset.term;
+            currentTerm = term;
+            document.querySelectorAll('.term-item').forEach(el => el.classList.remove('active'));
+            e.target.classList.add('active');
+            requestDefinition(term, currentLevel);
+        }
+    };
+
+    levelSelector.onclick = (e) => {
+        if (e.target && e.target.classList.contains('level-btn')) {
+            currentLevel = e.target.dataset.level;
+            document.querySelectorAll('.level-btn').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+            if (currentTerm) {
+                requestDefinition(currentTerm, currentLevel);
+            }
+        }
+    };
+
+    // =========================
+    // Info Modal Logic (기존 그대로)
+    // =========================
+    const infoBtn = document.getElementById('info-btn');
+    const infoModal = document.getElementById('info-modal');
+    const infoBackdrop = document.getElementById('info-backdrop');
+    const infoCloseBtn = document.getElementById('info-close-btn');
+
+    function openInfoModal() {
+        if (!infoModal) return;
+        infoModal.classList.add('open');
+        infoModal.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeInfoModal() {
+        if (!infoModal) return;
+        infoModal.classList.remove('open');
+        infoModal.setAttribute('aria-hidden', 'true');
+    }
+
+    if (infoBtn) {
+        infoBtn.addEventListener('click', openInfoModal);
+    }
+    if (infoCloseBtn) {
+        infoCloseBtn.addEventListener('click', closeInfoModal);
+    }
+    if (infoBackdrop) {
+        infoBackdrop.addEventListener('click', closeInfoModal);
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeInfoModal();
+        }
+    });
+    setTimeout(() => {
+        openInfoModal();
+    }, 100);
+</script>
+
+
+<!-- ===== Pretty Download PDF Button: themed styles + script ===== -->
+<style>
+  /* Theme-matched primary button */
+  #download-pdf-btn {
+    background: linear-gradient(135deg, #003366, #0055AA);
+    color: #fff;
+    border: none;
+    border-radius: 31.20px;
+    padding: 9.60px 19.20px;
+    font-size: 16.80px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 9.60px;
+    box-shadow: 0 7.20px 16.80px rgba(0,0,0,0.12);
+    letter-spacing: 0.24px;
+    user-select: none;
+  }
+  #download-pdf-btn:hover {
+    background: linear-gradient(135deg, #00478f, #1976D2);
+    transform: translateY(-2.40px);
+    box-shadow: 0 12.00px 21.60px rgba(0,0,0,0.18);
+  }
+  #download-pdf-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 4.80px 12.00px rgba(0,0,0,0.14);
+  }
+  #download-pdf-btn svg {
+    width: 19.20px;
+    height: 19.20px;
+    fill: currentColor;
+    flex-shrink: 0;
+  }
+
+  /* Floating action button (FAB) fallback */
+  #download-pdf-fab {
+    position: fixed;
+    right: 24.00px;
+    bottom: 24.00px;
+    z-index: 9999;
+    background: linear-gradient(135deg, #003366, #0055AA);
+    color: #fff;
+    border-radius: 33.60px;
+    padding: 14.40px 21.60px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 9.60px;
+    box-shadow: 0 12.00px 24.00px rgba(0,0,0,0.22);
+    transition: transform .2s ease, box-shadow .2s ease, opacity .2s ease;
+    opacity: 0.96;
+  }
+  #download-pdf-fab:hover {
+    transform: translateY(-2.40px);
+    box-shadow: 0 16.80px 28.80px rgba(0,0,0,0.26);
+    opacity: 1;
+  }
+  #download-pdf-fab svg {
+    width: 21.60px;
+    height: 21.60px;
+    fill: currentColor;
+  }
+</style>
+<script>
+(function() {
+  // Create the main button element
+  const btn = document.createElement('button');
+  btn.id = 'download-pdf-btn';
+  btn.type = 'button';
+  btn.setAttribute('aria-label', 'Download conversation as PDF');
+  btn.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" aria-hidden="true">
+      <path d="M10 2a1 1 0 011 1v8.586l2.293-2.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4A1 1 0 116.707 9.293L9 11.586V3a1 1 0 011-1z"/>
+      <path d="M3 15a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1z"/>
+    </svg>
+    <span>Download PDF</span>
+  `;
+
+  // Try to attach near a "Summary" pane title if present
+  let placed = false;
+  try {
+    const paneTitles = Array.from(document.querySelectorAll('.pane-title, .title, [data-pane-title]'));
+    for (const el of paneTitles) {
+      const txt = (el.textContent || '').trim().toLowerCase();
+      if (txt.includes('summary') || txt.includes('요약')) {
+        const wrap = document.createElement('span');
+        wrap.style.cssText = 'float:right; display:inline-flex; gap:8px; align-items:center;';
+        wrap.appendChild(btn);
+        el.style.position = 'relative';
+        el.appendChild(wrap);
+        placed = true;
+        break;
+      }
+    }
+  } catch (e) { console.warn('Place button failed', e); }
+
+  // Fallback FAB if not placed in a title area
+  let fab;
+  if (!placed) {
+    fab = document.createElement('button');
+    fab.id = 'download-pdf-fab';
+    fab.type = 'button';
+    fab.setAttribute('aria-label', 'Download conversation as PDF');
+    fab.innerHTML = btn.innerHTML;
+    document.body.appendChild(fab);
+  }
+
+  async function downloadPDF() {
+    const byId = (id) => document.getElementById(id);
+    const transcript = byId('live-transcript')?.textContent?.trim() || '';
+    const summary = byId('summary-output')?.innerText?.trim() || '';
+    const definitionTerm = byId('definition-term')?.textContent?.trim() || '';
+    const definition = byId('definition-output')?.textContent?.trim() || '';
+    const terms = Array.from(document.querySelectorAll('#tagged-terms-list li')).map(li => (li.textContent || '').trim());
+
+    const payload = {
+      title: 'MedLY AI Report',
+      transcript,
+      summary,
+      terms,
+      definition_term: definitionTerm,
+      definition
+    };
+
+    try {
+      const res = await fetch(`http://${BACKEND_URL}/api/export_pdf`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error('Failed to export PDF');
+      const data = await res.json();
+      const a = document.createElement('a');
+      a.href = data.url;
+      a.download = '';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } catch (err) {
+      console.error(err);
+      alert('PDF download failed. Please try again.');
+    }
+  }
+
+  btn.addEventListener('click', downloadPDF);
+  if (fab) fab.addEventListener('click', downloadPDF);
+})();
+</script>
+<!-- ===== End Pretty Download PDF Button ===== -->
+</body>
+</html>
